@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <title>Snake</title>
+</head>
+<body>
+    <h2 class="score-label">Score: 0</h1>
+    <canvas class="snake-canvas" width="1050" height="650"></canvas>
+    <div class="info-overlay active">
+        <label for="game-speed" class="speed-slider-label active">Game Speed: 3</label>
+        <input name="game-speed" type="range" class="speed-slider active" min="1" max="10" step="1" value="3">
+        <span class="hint-text">Press Enter To Play</span>
+    </div>
+</body>
+</html>

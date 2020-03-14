@@ -1,0 +1,55 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+}
+
+.snake-canvas {
+    border: 2px solid white;
+    background-color: #011C26;
+}
+
+.score-label {
+    color: white;
+}
+
+.info-overlay {
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+    position: absolute;
+    display: none;
+    min-height: 100vh;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    min-width: 100vw;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 3rem;
+    flex-direction: column;
+}
+
+.info-overlay.active {
+    display: flex;
+}
+
+.speed-slider-label,
+.speed-slider {
+    display: none;
+}
+
+.speed-slider-label.active,
+.speed-slider.active {
+    display: initial;
+}
