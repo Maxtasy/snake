@@ -5,8 +5,14 @@ const speedSliderLabel = document.querySelector(".speed-slider-label");
 const speedSlider = document.querySelector(".speed-slider");
 const infoOverlay = document.querySelector(".info-overlay");
 const hintText = document.querySelector(".hint-text");
+const soundFoodConsume = document.querySelector("#food_consume");
+soundFoodConsume.volume = 0.1;
+const soundMove = document.querySelector("#move");
+soundMove.volume = 0.01;
+const soundGameOver = document.querySelector("#game_over");
+soundGameOver.volume = 0.1;
 const foodImage = new Image();
-foodImage.src = "food_orange.png";
+foodImage.src = "img/food.png";
 
 const SQUARE_SIZE = 50;
 const CANVAS_WIDTH = 1050;
@@ -16,6 +22,14 @@ let score = 0;
 let game;
 let gameSpeed;
 let gameState = "page_loaded";
+
+let availableSquaresForFood = [];
+
+for (let i = 0; i < CANVAS_HEIGHT; i += SQUARE_SIZE) {
+    for (let j = 0; j < CANVAS_WIDTH; j += SQUARE_SIZE) {
+        availableSquaresForFood.push({x: j, y: i});
+    }
+}
 
 const snake = {
     size: SQUARE_SIZE,
@@ -30,6 +44,15 @@ const food = {
     position: [CANVAS_WIDTH / 2 - SQUARE_SIZE / 2 + 200, CANVAS_HEIGHT / 2 - SQUARE_SIZE / 2]
 }
 
+function updateAvailableSquaresForFood() {
+    // Remove the square where the head is now
+    const removeIndex = availableSquaresForFood.findIndex(element => element.x === snake.elements[0][0] + snake.direction[0] && element.y === snake.elements[0][1] + snake.direction[1]);
+    availableSquaresForFood.splice(removeIndex, 1);
+    if (!snake.foodConsumed) {
+        availableSquaresForFood.push({x: snake.elements[snake.elements.length - 1][0], y: snake.elements[snake.elements.length - 1][1]});
+    }
+}
+
 function increaseScore() {
     score += 1;
     scoreLabel.textContent = `Score: ${score}`;
@@ -41,8 +64,13 @@ function updateSpeed() {
 }
 
 function placeFood() {
-    const x = Math.floor(Math.random() * 21) * SQUARE_SIZE;
-    const y = Math.floor(Math.random() * 13) * SQUARE_SIZE;
+    if (availableSquaresForFood.length < 1) {
+        endCurrentGame();
+        return;
+    }
+    const index = Math.floor(Math.random() * availableSquaresForFood.length);
+    const x = availableSquaresForFood[index].x;
+    const y = availableSquaresForFood[index].y;
     food.position = [x, y];
 }
 
@@ -85,10 +113,36 @@ function clearCanvas() {
 }
 
 function drawSnake() {
-    snake.elements.forEach(snakeElement => {
-        ctx.fillStyle = snake.color;
-        ctx.fillRect(snakeElement[0], snakeElement[1], SQUARE_SIZE, SQUARE_SIZE);
-    });
+    soundMove.play();
+    ctx.fillStyle = snake.color;
+
+    // Snake just consists of head
+    if (snake.elements.length < 2) {
+        ctx.fillRect(snake.elements[0][0] + 1, snake.elements[0][1] + 1, SQUARE_SIZE - 2, SQUARE_SIZE - 2);
+        return;
+    }
+
+    for (let i = 0; i < snake.elements.length; i++) {
+        // Draw small square for all elements
+        ctx.fillRect(snake.elements[i][0] + 1, snake.elements[i][1] + 1, SQUARE_SIZE - 2, SQUARE_SIZE - 2);
+
+        // All elements but the tail get checked for connection to next element
+        if (i < snake.elements.length - 1) {
+            // Has connection on left side
+            if (snake.elements[i][0] - snake.elements[i + 1][0] > 0) {
+                ctx.fillRect(snake.elements[i][0] - 1, snake.elements[i][1] + 1, 2, SQUARE_SIZE - 2);
+            // Has connection on right side
+            } else if (snake.elements[i][0] - snake.elements[i + 1][0] < 0) {
+                ctx.fillRect(snake.elements[i][0] + SQUARE_SIZE - 1, snake.elements[i][1] + 1, 2, SQUARE_SIZE - 2);
+            // Has connection on top side
+            } else if (snake.elements[i][1] - snake.elements[i + 1][1] > 0) {
+                ctx.fillRect(snake.elements[i][0] + 1, snake.elements[i][1] - 1, SQUARE_SIZE - 2, 2);
+            // Has connection on bottom side
+            } else if (snake.elements[i][1] - snake.elements[i + 1][1] < 0) {
+                ctx.fillRect(snake.elements[i][0] + 1, snake.elements[i][1] + SQUARE_SIZE - 1, SQUARE_SIZE - 2, 2);
+            }
+        }
+    }
 }
 
 function drawFood() {
@@ -116,6 +170,7 @@ function updateSnake() {
 
 function checkFoodCollision() {
     if (snake.elements[0][0] == food.position[0] && snake.elements[0][1] == food.position[1]) {
+        soundFoodConsume.play();
         return true;
     }
 }
@@ -132,6 +187,7 @@ function checkSelfCollision() {
 }
 
 function updateCanvas() {
+    updateAvailableSquaresForFood();
     updateSnake();
     if (checkWallsCollision()) {
         endCurrentGame();
@@ -160,6 +216,7 @@ function endCurrentGame() {
     speedSlider.classList.add("active");
     speedSliderLabel.classList.add("active");
     gameState = "game_over";
+    soundGameOver.play();
 }
 
 function togglePause() {

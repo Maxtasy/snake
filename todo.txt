@@ -1,2 +1,0 @@
-- list of available spaces for food, if list.length < 1 --> game over
-- sound
