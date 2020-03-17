@@ -13,6 +13,13 @@ body {
     background-color: #333;
 }
 
+.score-container {
+    width: 1054px;
+    background-color: #011C26;
+    border: 2px solid white;
+    text-align: center;
+}
+
 .snake-canvas {
     border: 2px solid white;
     background-color: #011C26;
@@ -31,7 +38,7 @@ body {
     display: none;
     min-height: 100vh;
     color: white;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     min-width: 100vw;
     justify-content: center;
     align-items: center;
